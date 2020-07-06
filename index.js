@@ -1,4 +1,4 @@
-const { Engine, Render, Runner, World, Bodies } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body } = Matter;
 
 const cells = 15;
 const width = 600;
@@ -156,3 +156,25 @@ World.add(world, goal);
 //Ball
 const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4);
 World.add(world, ball);
+
+//Keyboard controls
+
+document.addEventListener("keydown", (event) => {
+  const { x, y } = ball.velocity;
+  //move up ->W or UpArrow
+  if (event.keyCode === 87 || event.keyCode === 38) {
+    Body.setVelocity(ball, { x, y: y - 5 });
+  }
+  //move right->D or RightArrow
+  if (event.keyCode === 68 || event.keyCode === 39) {
+    Body.setVelocity(ball, { x: x + 5, y });
+  }
+  //move down->S or DownArrow
+  if (event.keyCode === 83 || event.keyCode === 40) {
+    Body.setVelocity(ball, { x, y: y + 5 });
+  }
+  //move left->A or LeftArrow
+  if (event.keyCode === 65 || event.keyCode === 37) {
+    Body.setVelocity(ball, { x: x - 5, y });
+  }
+});
