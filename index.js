@@ -1,9 +1,12 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells = 5;
-const width = 600;
-const height = 600;
-const unitLength = width / cells;
+const cellsCol = 14;
+const cellsRow = 10;
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const unitLengthX = width / cellsCol;
+const unitLengthY = height / cellsRow;
 
 const engine = Engine.create();
 //disable gravity
@@ -49,20 +52,20 @@ const shuffle = (arr) => {
   return arr;
 };
 
-const grid = Array(cells)
+const grid = Array(cellsRow)
   .fill(null)
-  .map(() => Array(cells).fill(false));
+  .map(() => Array(cellsCol).fill(false));
 
-const verticals = Array(cells)
+const verticals = Array(cellsRow)
   .fill(null)
-  .map(() => Array(cells - 1).fill(false));
+  .map(() => Array(cellsCol - 1).fill(false));
 
-const horizontals = Array(cells - 1)
+const horizontals = Array(cellsRow - 1)
   .fill(null)
-  .map(() => Array(cells).fill(false));
+  .map(() => Array(cellsCol).fill(false));
 
-const startRow = Math.floor(Math.random() * cells);
-const startColumn = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cellsRow);
+const startColumn = Math.floor(Math.random() * cellsCol);
 
 const stepThroughCell = (row, column) => {
   //If i have visited cell at [row,column] return
@@ -83,9 +86,9 @@ const stepThroughCell = (row, column) => {
     //see if that neighbour is out of bounds
     if (
       nextRow < 0 ||
-      nextRow >= cells ||
+      nextRow >= cellsRow ||
       nextColumn < 0 ||
-      nextColumn >= cells
+      nextColumn >= cellsCol
     )
       continue;
 
@@ -121,9 +124,9 @@ stepThroughCell(startRow, startColumn);
 horizontals.forEach((row, rowIdx) => {
   row.forEach((open, colIdx) => {
     if (open) return;
-    const x = colIdx * unitLength + unitLength / 2;
-    const y = rowIdx * unitLength + unitLength;
-    const w = unitLength;
+    const x = colIdx * unitLengthX + unitLengthX / 2;
+    const y = rowIdx * unitLengthY + unitLengthY;
+    const w = unitLengthX;
     const h = 5;
     const wall = Bodies.rectangle(x, y, w, h, {
       isStatic: true,
@@ -138,9 +141,9 @@ horizontals.forEach((row, rowIdx) => {
 verticals.forEach((row, rowIdx) => {
   row.forEach((open, colIdx) => {
     if (open) return;
-    const x = colIdx * unitLength + unitLength;
-    const y = rowIdx * unitLength + unitLength / 2;
-    const h = unitLength;
+    const x = colIdx * unitLengthX + unitLengthX;
+    const y = rowIdx * unitLengthY + unitLengthY / 2;
+    const h = unitLengthY;
     const w = 5;
     const wall = Bodies.rectangle(x, y, w, h, {
       isStatic: true,
@@ -153,16 +156,17 @@ verticals.forEach((row, rowIdx) => {
 
 //Goal
 const goal = Bodies.rectangle(
-  width - unitLength / 2,
-  height - unitLength / 2,
-  unitLength * 0.7,
-  unitLength * 0.7,
+  width - unitLengthX / 2,
+  height - unitLengthY / 2,
+  unitLengthX * 0.7,
+  unitLengthY * 0.7,
   { isStatic: true, label: "goal" }
 );
 World.add(world, goal);
 
 //Ball
-const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
+const radius = Math.min(unitLengthX, unitLengthY) / 4;
+const ball = Bodies.circle(unitLengthX / 2, unitLengthY / 2, radius, {
   label: "ball",
 });
 World.add(world, ball);
@@ -173,19 +177,19 @@ document.addEventListener("keydown", (event) => {
   const { x, y } = ball.velocity;
   //move up ->W or UpArrow
   if (event.keyCode === 87 || event.keyCode === 38) {
-    Body.setVelocity(ball, { x, y: y - 5 });
+    Body.setVelocity(ball, { x, y: y - 3 });
   }
   //move right->D or RightArrow
   if (event.keyCode === 68 || event.keyCode === 39) {
-    Body.setVelocity(ball, { x: x + 5, y });
+    Body.setVelocity(ball, { x: x + 3, y });
   }
   //move down->S or DownArrow
   if (event.keyCode === 83 || event.keyCode === 40) {
-    Body.setVelocity(ball, { x, y: y + 5 });
+    Body.setVelocity(ball, { x, y: y + 3 });
   }
   //move left->A or LeftArrow
   if (event.keyCode === 65 || event.keyCode === 37) {
-    Body.setVelocity(ball, { x: x - 5, y });
+    Body.setVelocity(ball, { x: x - 3, y });
   }
 });
 // Win condition
