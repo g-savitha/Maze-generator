@@ -1,7 +1,7 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cellsCol = 14;
-const cellsRow = 10;
+const cellsCol = 20;
+const cellsRow = 15;
 const width = window.innerWidth;
 const height = window.innerHeight;
 
@@ -131,6 +131,9 @@ horizontals.forEach((row, rowIdx) => {
     const wall = Bodies.rectangle(x, y, w, h, {
       isStatic: true,
       label: "wall",
+      render: {
+        fillStyle: "red",
+      },
     });
 
     World.add(world, wall);
@@ -148,6 +151,9 @@ verticals.forEach((row, rowIdx) => {
     const wall = Bodies.rectangle(x, y, w, h, {
       isStatic: true,
       label: "wall",
+      render: {
+        fillStyle: "red",
+      },
     });
 
     World.add(world, wall);
@@ -160,7 +166,13 @@ const goal = Bodies.rectangle(
   height - unitLengthY / 2,
   unitLengthX * 0.7,
   unitLengthY * 0.7,
-  { isStatic: true, label: "goal" }
+  {
+    isStatic: true,
+    label: "goal",
+    render: {
+      fillStyle: "green",
+    },
+  }
 );
 World.add(world, goal);
 
@@ -168,6 +180,9 @@ World.add(world, goal);
 const radius = Math.min(unitLengthX, unitLengthY) / 4;
 const ball = Bodies.circle(unitLengthX / 2, unitLengthY / 2, radius, {
   label: "ball",
+  render: {
+    fillStyle: "yellow",
+  },
 });
 World.add(world, ball);
 
@@ -202,6 +217,7 @@ Events.on(engine, "collisionStart", (event) => {
       labels.includes(collision.bodyA.label) &&
       labels.includes(collision.bodyB.label)
     ) {
+      document.querySelector(".winner").classList.remove("hidden");
       //win animation
       world.gravity.y = 1;
       world.bodies.forEach((body) => {
