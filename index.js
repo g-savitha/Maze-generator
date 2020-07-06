@@ -1,11 +1,13 @@
-const { Engine, Render, Runner, World, Bodies, Body } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells = 15;
+const cells = 5;
 const width = 600;
 const height = 600;
 const unitLength = width / cells;
 
 const engine = Engine.create();
+//disable gravity
+engine.world.gravity.y = 0;
 const { world } = engine;
 const render = Render.create({
   element: document.body,
@@ -123,7 +125,10 @@ horizontals.forEach((row, rowIdx) => {
     const y = rowIdx * unitLength + unitLength;
     const w = unitLength;
     const h = 5;
-    const wall = Bodies.rectangle(x, y, w, h, { isStatic: true });
+    const wall = Bodies.rectangle(x, y, w, h, {
+      isStatic: true,
+      label: "wall",
+    });
 
     World.add(world, wall);
   });
@@ -137,7 +142,10 @@ verticals.forEach((row, rowIdx) => {
     const y = rowIdx * unitLength + unitLength / 2;
     const h = unitLength;
     const w = 5;
-    const wall = Bodies.rectangle(x, y, w, h, { isStatic: true });
+    const wall = Bodies.rectangle(x, y, w, h, {
+      isStatic: true,
+      label: "wall",
+    });
 
     World.add(world, wall);
   });
@@ -149,12 +157,14 @@ const goal = Bodies.rectangle(
   height - unitLength / 2,
   unitLength * 0.7,
   unitLength * 0.7,
-  { isStatic: true }
+  { isStatic: true, label: "goal" }
 );
 World.add(world, goal);
 
 //Ball
-const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4);
+const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
+  label: "ball",
+});
 World.add(world, ball);
 
 //Keyboard controls
@@ -177,4 +187,24 @@ document.addEventListener("keydown", (event) => {
   if (event.keyCode === 65 || event.keyCode === 37) {
     Body.setVelocity(ball, { x: x - 5, y });
   }
+});
+// Win condition
+
+Events.on(engine, "collisionStart", (event) => {
+  event.pairs.forEach((collision) => {
+    const labels = ["ball", "goal"];
+
+    if (
+      labels.includes(collision.bodyA.label) &&
+      labels.includes(collision.bodyB.label)
+    ) {
+      //win animation
+      world.gravity.y = 1;
+      world.bodies.forEach((body) => {
+        if (body.label === "wall") {
+          Body.setStatic(body, false);
+        }
+      });
+    }
+  });
 });
