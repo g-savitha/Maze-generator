@@ -1,6 +1,6 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
-const cells = 5;
+const cells = 3;
 const width = 600;
 const height = 600;
 
@@ -68,16 +68,39 @@ const stepThroughCell = (row, column) => {
   grid[row][column] = true;
   //assemble randomly-ordered list neighbours
   const neighbours = shuffle([
-    [row - 1, column],
-    [row, column + 1],
-    [row + 1, column],
-    [row, column - 1],
+    [row - 1, column, "up"],
+    [row, column + 1, "right"],
+    [row + 1, column, "down"],
+    [row, column - 1, "left"],
   ]);
 
   //for each neighbour...
-  //see if that neighbour is out of bounds
-  //if we have visited that neighbour continue to next neighbour
-  //remove a wall from either horizontal or verticals array
+  for (let neighbour of neighbours) {
+    const [nextRow, nextColumn, direction] = neighbour;
+    //see if that neighbour is out of bounds
+    if (
+      nextRow < 0 ||
+      nextRow >= cells ||
+      nextColumn < 0 ||
+      nextColumn >= cells
+    )
+      continue;
+
+    //if we have visited that neighbour continue to next neighbour
+    if (grid[nextRow][nextColumn]) continue;
+
+    //remove a wall from either horizontal or verticals array
+    if (direction === "left") {
+      verticals[row][column - 1] = true;
+    } else if (direction === "right") {
+      verticals[row][column] = true;
+    } else if (direction === "up") {
+      horizontals[row - 1][column] = true;
+    } else if (direction === "down") {
+      horizontals[row][column] = true;
+    }
+  }
+
   //visit that next cell
 };
 
