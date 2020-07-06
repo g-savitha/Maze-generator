@@ -90,18 +90,25 @@ const stepThroughCell = (row, column) => {
     if (grid[nextRow][nextColumn]) continue;
 
     //remove a wall from either horizontal or verticals array
-    if (direction === "left") {
-      verticals[row][column - 1] = true;
-    } else if (direction === "right") {
-      verticals[row][column] = true;
-    } else if (direction === "up") {
-      horizontals[row - 1][column] = true;
-    } else if (direction === "down") {
-      horizontals[row][column] = true;
+    switch (direction) {
+      case "up":
+        horizontals[row - 1][column] = true;
+        break;
+      case "down":
+        horizontals[row][column] = true;
+        break;
+      case "left":
+        verticals[row][column - 1] = true;
+        break;
+      case "right":
+        verticals[row][column] = true;
+        break;
+      default:
+        break;
     }
+    //visit that next cell
+    stepThroughCell(nextRow, nextColumn);
   }
-
-  //visit that next cell
 };
 
 stepThroughCell(startRow, startColumn);
