@@ -4,4 +4,4 @@ Used Canvas API with [Matter.js](https://brm.io/matter-js/) library to create th
 
 > Note: You can play this game only on PC
 
-[Demo](https://gsavitha95.github.io/mazegame/)
+[Demo](https://g-savitha.github.io/mazegame/)
